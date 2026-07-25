@@ -1,10 +1,11 @@
 package com.resumeforge.resume;
 
+import com.resumeforge.resume.dto.ResumeResponseDto;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,18 +25,21 @@ public class ResumeController {
             value = "/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    public ResponseEntity<Resume> uploadResume(
+    public ResponseEntity<ResumeResponseDto> uploadResume(
             @RequestPart("file") MultipartFile file) throws IOException {
 
-        Resume savedResume = resumeService.uploadResume(file);
+        ResumeResponseDto response = resumeService.uploadResume(file);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(savedResume);
+                .body(response);
     }
 
     @GetMapping
-    public List<Resume> getAllResumes() {
-        return resumeService.getAllResumes();
+    public ResponseEntity<List<Resume>> getAllResumes() {
+
+        List<Resume> resumes = resumeService.getAllResumes();
+
+        return ResponseEntity.ok(resumes);
     }
 }

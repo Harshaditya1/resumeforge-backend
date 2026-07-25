@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.resumeforge.resume.dto.ResumeResponseDto;
 
 @Service
 public class ResumeService {
@@ -13,6 +14,7 @@ public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final FileStorageService fileStorageService;
     private final PdfTextExtractorService pdfTextExtractorService;
+
 
     public ResumeService(
             ResumeRepository resumeRepository,
@@ -24,7 +26,7 @@ public class ResumeService {
         this.pdfTextExtractorService = pdfTextExtractorService;
     }
 
-    public Resume uploadResume(MultipartFile file) throws IOException {
+    public ResumeResponseDto uploadResume(MultipartFile file) throws IOException {
 
         String storedFileName = fileStorageService.storeFile(file);
 
@@ -49,7 +51,13 @@ public class ResumeService {
         System.out.println(extractedText);
         System.out.println("===========================================");
 
-        return savedResume;
+        return ResumeResponseDto.builder()
+                .id(savedResume.getId())
+                .originalFileName(savedResume.getOriginalFileName())
+                .fileType(savedResume.getFileType())
+                .fileSize(savedResume.getFileSize())
+                .uploadedAt(savedResume.getUploadedAt())
+                .build();
     }
 
     public List<Resume> getAllResumes() {
