@@ -37,6 +37,9 @@ public class Resume {
     @Column(nullable = false)
     private String filePath;
 
+    @Column(columnDefinition = "TEXT")
+    private String extractedText;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime uploadedAt;
 

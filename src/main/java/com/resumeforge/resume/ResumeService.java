@@ -12,11 +12,16 @@ public class ResumeService {
 
     private final ResumeRepository resumeRepository;
     private final FileStorageService fileStorageService;
+    private final PdfTextExtractorService pdfTextExtractorService;
 
-    public ResumeService(ResumeRepository resumeRepository,
-                         FileStorageService fileStorageService) {
+    public ResumeService(
+            ResumeRepository resumeRepository,
+            FileStorageService fileStorageService,
+            PdfTextExtractorService pdfTextExtractorService) {
+
         this.resumeRepository = resumeRepository;
         this.fileStorageService = fileStorageService;
+        this.pdfTextExtractorService = pdfTextExtractorService;
     }
 
     public Resume uploadResume(MultipartFile file) throws IOException {
@@ -32,7 +37,19 @@ public class ResumeService {
                 .uploadedAt(LocalDateTime.now())
                 .build();
 
-        return resumeRepository.save(resume);
+        Resume savedResume = resumeRepository.save(resume);
+
+        String extractedText = pdfTextExtractorService.extractText(savedResume.getFilePath());
+
+        savedResume.setExtractedText(extractedText);
+
+        savedResume = resumeRepository.save(savedResume);
+
+        System.out.println("========== EXTRACTED RESUME TEXT ==========");
+        System.out.println(extractedText);
+        System.out.println("===========================================");
+
+        return savedResume;
     }
 
     public List<Resume> getAllResumes() {
