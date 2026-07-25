@@ -8,6 +8,7 @@ import com.resumeforge.jobdescription.JobDescriptionRepository;
 import com.resumeforge.resume.Resume;
 import com.resumeforge.resume.ResumeRepository;
 import org.springframework.stereotype.Service;
+import com.resumeforge.analysis.dto.ResumeImprovementDto;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,17 +21,20 @@ public class AnalysisService {
     private final JobDescriptionRepository jobDescriptionRepository;
     private final KeywordExtractorService keywordExtractorService;
     private final AtsReportService atsReportService;
+    private final ResumeImprovementService resumeImprovementService;
 
     public AnalysisService(
             ResumeRepository resumeRepository,
             JobDescriptionRepository jobDescriptionRepository,
             KeywordExtractorService keywordExtractorService,
-            AtsReportService atsReportService) {
+            AtsReportService atsReportService,
+            ResumeImprovementService resumeImprovementService) {
 
         this.resumeRepository = resumeRepository;
         this.jobDescriptionRepository = jobDescriptionRepository;
         this.keywordExtractorService = keywordExtractorService;
         this.atsReportService = atsReportService;
+        this.resumeImprovementService = resumeImprovementService;
     }
 
     public AnalysisResponseDto analyze(AnalysisRequestDto request) {
@@ -75,6 +79,10 @@ public class AnalysisService {
                 new ArrayList<>(matchedKeywords),
                 new ArrayList<>(missingKeywords)
         );
+        ResumeImprovementDto improvement =
+                resumeImprovementService.generateSuggestions(
+                        new ArrayList<>(missingKeywords)
+                );
 
         // Build Response
         return AnalysisResponseDto.builder()
@@ -84,6 +92,7 @@ public class AnalysisService {
                 .missingKeywords(new ArrayList<>(missingKeywords))
                 .matchPercentage(matchPercentage)
                 .report(report)
+                .improvement(improvement)
                 .build();
     }
 }

@@ -30,4 +30,6 @@ public class AnalysisResponseDto {
 
     // Professional ATS Report
     private AtsReportDto report;
+
+    private ResumeImprovementDto improvement;
 }
