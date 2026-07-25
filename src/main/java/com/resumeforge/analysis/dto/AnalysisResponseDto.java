@@ -1,15 +1,27 @@
 package com.resumeforge.analysis.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnalysisResponseDto {
 
-    private Set<String> resumeKeywords;
+    // Existing extracted keywords
+    private List<String> resumeKeywords;
 
-    private Set<String> jobKeywords;
+    private List<String> jobDescriptionKeywords;
+
+    // ATS Matching Results
+    private List<String> matchedKeywords;
+
+    private List<String> missingKeywords;
+
+    private double matchPercentage;
 }
