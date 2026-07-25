@@ -31,5 +31,9 @@ public class AnalysisResponseDto {
     // Professional ATS Report
     private AtsReportDto report;
 
+    // Rule-based Resume Improvement Suggestions
     private ResumeImprovementDto improvement;
+
+    // AI-powered Resume Analysis
+    private AiAnalysisResponseDto aiAnalysis;
 }
