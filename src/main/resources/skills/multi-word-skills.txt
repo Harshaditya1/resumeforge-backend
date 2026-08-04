@@ -1,0 +1,53 @@
+Spring Boot
+Spring Security
+Spring MVC
+Spring Data JPA
+Spring Data
+Spring AI
+Machine Learning
+Deep Learning
+Natural Language Processing
+REST API
+RESTful API
+Object Oriented Programming
+Microservices Architecture
+Docker Compose
+Node.js
+Express.js
+Next.js
+React.js
+Angular.js
+Vue.js
+Apache Kafka
+RabbitMQ
+SQL Server
+PostgreSQL
+MySQL
+MongoDB
+Oracle Database
+GitHub Actions
+CI/CD
+JUnit 5
+Mockito
+AWS Lambda
+Amazon S3
+Google Cloud
+Microsoft Azure
+HTML5
+CSS3
+Tailwind CSS
+Bootstrap 5
+Java SE
+Java EE
+C Sharp
+ASP.NET
+Entity Framework
+Computer Vision
+Data Structures
+Operating Systems
+System Design
+Design Patterns
+Clean Architecture
+Domain Driven Design
+Test Driven Development
+Behavior Driven Development

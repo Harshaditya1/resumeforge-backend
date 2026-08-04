@@ -1,0 +1,53 @@
+js=javascript
+javascript=javascript
+
+ts=typescript
+typescript=typescript
+
+rest=rest api
+rest api=rest api
+restful api=rest api
+
+spring framework=spring
+spring=spring
+
+spring boot=spring boot
+spring security=spring security
+spring ai=spring ai
+
+node=node.js
+nodejs=node.js
+node.js=node.js
+
+react=react.js
+reactjs=react.js
+react.js=react.js
+
+angular=angular.js
+angularjs=angular.js
+angular.js=angular.js
+
+vue=vue.js
+vuejs=vue.js
+vue.js=vue.js
+
+postgres=postgresql
+postgresql=postgresql
+
+mongo=mongodb
+mongodb=mongodb
+
+docker=docker
+docker compose=docker compose
+
+k8s=kubernetes
+kubernetes=kubernetes
+
+oop=object oriented programming
+object oriented programming=object oriented programming
+
+ml=machine learning
+machine learning=machine learning
+
+ai=artificial intelligence
+artificial intelligence=artificial intelligence

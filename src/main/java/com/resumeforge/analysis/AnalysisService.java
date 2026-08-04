@@ -1,16 +1,18 @@
 package com.resumeforge.analysis;
 
+import com.resumeforge.ai.AiAnalysisService;
+import com.resumeforge.analysis.dto.AiAnalysisResponseDto;
 import com.resumeforge.analysis.dto.AnalysisRequestDto;
 import com.resumeforge.analysis.dto.AnalysisResponseDto;
 import com.resumeforge.analysis.dto.AtsReportDto;
+import com.resumeforge.analysis.dto.ResumeImprovementDto;
 import com.resumeforge.jobdescription.JobDescription;
 import com.resumeforge.jobdescription.JobDescriptionRepository;
 import com.resumeforge.resume.Resume;
 import com.resumeforge.resume.ResumeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import com.resumeforge.analysis.dto.ResumeImprovementDto;
-import com.resumeforge.ai.AiAnalysisService;
-import com.resumeforge.analysis.dto.AiAnalysisResponseDto;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +20,8 @@ import java.util.Set;
 
 @Service
 public class AnalysisService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AnalysisService.class);
 
     private final ResumeRepository resumeRepository;
     private final JobDescriptionRepository jobDescriptionRepository;
@@ -55,22 +59,18 @@ public class AnalysisService {
                         new IllegalArgumentException(
                                 "Job Description not found with id: " + request.getJobDescriptionId()));
 
-        // Extract keywords
         Set<String> resumeKeywords =
                 keywordExtractorService.extractKeywords(resume.getExtractedText());
 
         Set<String> jobKeywords =
                 keywordExtractorService.extractKeywords(jobDescription.getContent());
 
-        // Find matched keywords
         Set<String> matchedKeywords = new HashSet<>(resumeKeywords);
         matchedKeywords.retainAll(jobKeywords);
 
-        // Find missing keywords
         Set<String> missingKeywords = new HashSet<>(jobKeywords);
         missingKeywords.removeAll(resumeKeywords);
 
-        // Calculate ATS Match Percentage
         double matchPercentage = 0.0;
 
         if (!jobKeywords.isEmpty()) {
@@ -78,23 +78,28 @@ public class AnalysisService {
             matchPercentage = Math.round(matchPercentage * 100.0) / 100.0;
         }
 
-        // Generate ATS Report
         AtsReportDto report = atsReportService.generateReport(
                 matchPercentage,
                 new ArrayList<>(matchedKeywords),
                 new ArrayList<>(missingKeywords)
         );
+
         ResumeImprovementDto improvement =
                 resumeImprovementService.generateSuggestions(
                         new ArrayList<>(missingKeywords)
                 );
-        AiAnalysisResponseDto aiAnalysis =
-                aiAnalysisService.analyzeResume(
-                        resume.getExtractedText(),
-                        jobDescription.getContent()
-                );
 
-        // Build Response
+        AiAnalysisResponseDto aiAnalysis = null;
+
+        try {
+            aiAnalysis = aiAnalysisService.analyzeResume(
+                    resume.getExtractedText(),
+                    jobDescription.getContent()
+            );
+        } catch (Exception ex) {
+            logger.error("Gemini AI analysis failed. ATS analysis will continue.", ex);
+        }
+
         return AnalysisResponseDto.builder()
                 .resumeKeywords(new ArrayList<>(resumeKeywords))
                 .jobDescriptionKeywords(new ArrayList<>(jobKeywords))

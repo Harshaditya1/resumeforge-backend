@@ -14,7 +14,6 @@ public class AiClientService {
     }
 
     public AiAnalysisResponseDto ask(String prompt) {
-
         return chatClient.prompt()
                 .user(prompt)
                 .call()
