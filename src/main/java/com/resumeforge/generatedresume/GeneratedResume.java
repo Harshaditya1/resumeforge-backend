@@ -32,7 +32,7 @@ public class GeneratedResume {
     @JoinColumn(name = "job_description_id", nullable = false)
     private JobDescription jobDescription;
 
-    @Lob
+
     @Column(columnDefinition = "TEXT", nullable = false)
     private String generatedResume;
 
