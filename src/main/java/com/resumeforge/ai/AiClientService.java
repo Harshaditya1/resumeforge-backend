@@ -13,10 +13,10 @@ public class AiClientService {
         this.chatClient = chatClientBuilder.build();
     }
 
-    public AiAnalysisResponseDto ask(String prompt) {
+    public <T> T ask(String prompt, Class<T> responseType) {
         return chatClient.prompt()
                 .user(prompt)
                 .call()
-                .entity(AiAnalysisResponseDto.class);
+                .entity(responseType);
     }
 }
