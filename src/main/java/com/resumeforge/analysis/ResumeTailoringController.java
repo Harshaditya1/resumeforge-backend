@@ -22,9 +22,8 @@ public class ResumeTailoringController {
     ) {
 
         return resumeTailoringService.tailorResume(
-                request.getResumeText(),
-                request.getJobDescription(),
-                request.getExtractedKeywords()
+                request.getResumeId(),
+                request.getJobDescriptionId()
         );
     }
 }

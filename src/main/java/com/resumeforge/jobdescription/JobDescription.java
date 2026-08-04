@@ -21,5 +21,9 @@ public class JobDescription {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String extractedKeywords;
+
     private LocalDateTime createdAt;
 }

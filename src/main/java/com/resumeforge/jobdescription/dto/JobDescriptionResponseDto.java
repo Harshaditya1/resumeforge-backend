@@ -17,5 +17,7 @@ public class JobDescriptionResponseDto {
 
     private String content;
 
+    private String extractedKeywords;
+
     private LocalDateTime createdAt;
 }

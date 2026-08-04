@@ -1,6 +1,5 @@
 package com.resumeforge.ai;
 
-import com.resumeforge.analysis.dto.AiAnalysisResponseDto;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +13,7 @@ public class AiClientService {
     }
 
     public <T> T ask(String prompt, Class<T> responseType) {
+
         return chatClient.prompt()
                 .user(prompt)
                 .call()
