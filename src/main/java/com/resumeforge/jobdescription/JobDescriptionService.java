@@ -1,6 +1,7 @@
 package com.resumeforge.jobdescription;
 
 import com.resumeforge.analysis.KeywordExtractorService;
+import com.resumeforge.exception.ResourceNotFoundException;
 import com.resumeforge.jobdescription.dto.JobDescriptionRequestDto;
 import com.resumeforge.jobdescription.dto.JobDescriptionResponseDto;
 import org.springframework.stereotype.Service;
@@ -42,5 +43,14 @@ public class JobDescriptionService {
                 .extractedKeywords(savedJobDescription.getExtractedKeywords())
                 .createdAt(savedJobDescription.getCreatedAt())
                 .build();
+    }
+
+    public JobDescription getJobDescriptionById(Long jobDescriptionId) {
+        return jobDescriptionRepository.findById(jobDescriptionId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Job Description not found with id: " + jobDescriptionId
+                        )
+                );
     }
 }

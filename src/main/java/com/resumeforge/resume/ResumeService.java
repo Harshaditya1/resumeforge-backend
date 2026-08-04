@@ -1,12 +1,13 @@
 package com.resumeforge.resume;
 
+import com.resumeforge.exception.ResourceNotFoundException;
+import com.resumeforge.resume.dto.ResumeResponseDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import com.resumeforge.resume.dto.ResumeResponseDto;
 
 @Service
 public class ResumeService {
@@ -14,7 +15,6 @@ public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final FileStorageService fileStorageService;
     private final PdfTextExtractorService pdfTextExtractorService;
-
 
     public ResumeService(
             ResumeRepository resumeRepository,
@@ -62,5 +62,14 @@ public class ResumeService {
 
     public List<Resume> getAllResumes() {
         return resumeRepository.findAll();
+    }
+
+    public Resume getResumeById(Long resumeId) {
+        return resumeRepository.findById(resumeId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Resume not found with id: " + resumeId
+                        )
+                );
     }
 }

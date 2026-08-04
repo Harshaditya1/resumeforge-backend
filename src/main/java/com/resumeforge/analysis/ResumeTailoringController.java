@@ -1,7 +1,10 @@
 package com.resumeforge.analysis;
 
+import com.resumeforge.ai.ResumeGenerationService;
 import com.resumeforge.ai.ResumeTailoringService;
+import com.resumeforge.analysis.dto.AIResumeGenerationResponseDto;
 import com.resumeforge.analysis.dto.AIResumeTailoringResponseDto;
+import com.resumeforge.analysis.dto.GenerateResumeRequestDto;
 import com.resumeforge.analysis.dto.ResumeTailoringRequestDto;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -11,17 +14,31 @@ import org.springframework.web.bind.annotation.*;
 public class ResumeTailoringController {
 
     private final ResumeTailoringService resumeTailoringService;
+    private final ResumeGenerationService resumeGenerationService;
 
-    public ResumeTailoringController(ResumeTailoringService resumeTailoringService) {
+    public ResumeTailoringController(
+            ResumeTailoringService resumeTailoringService,
+            ResumeGenerationService resumeGenerationService
+    ) {
         this.resumeTailoringService = resumeTailoringService;
+        this.resumeGenerationService = resumeGenerationService;
     }
 
     @PostMapping
     public AIResumeTailoringResponseDto tailorResume(
             @Valid @RequestBody ResumeTailoringRequestDto request
     ) {
-
         return resumeTailoringService.tailorResume(
+                request.getResumeId(),
+                request.getJobDescriptionId()
+        );
+    }
+
+    @PostMapping("/generate")
+    public AIResumeGenerationResponseDto generateResume(
+            @Valid @RequestBody GenerateResumeRequestDto request
+    ) {
+        return resumeGenerationService.generateResume(
                 request.getResumeId(),
                 request.getJobDescriptionId()
         );
