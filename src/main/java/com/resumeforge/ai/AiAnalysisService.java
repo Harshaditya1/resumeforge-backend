@@ -25,6 +25,9 @@ public class AiAnalysisService {
                 jobDescription
         );
 
-        return aiClientService.ask(prompt);
+        return aiClientService.ask(
+                prompt,
+                AiAnalysisResponseDto.class
+        );
     }
 }
