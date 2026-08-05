@@ -1,6 +1,8 @@
 package com.resumeforge.jobdescription;
 
 import com.resumeforge.analysis.KeywordExtractorService;
+import com.resumeforge.auth.CurrentUserService;
+import com.resumeforge.auth.user.User;
 import com.resumeforge.exception.ResourceNotFoundException;
 import com.resumeforge.jobdescription.dto.JobDescriptionRequestDto;
 import com.resumeforge.jobdescription.dto.JobDescriptionResponseDto;
@@ -13,16 +15,21 @@ public class JobDescriptionService {
 
     private final JobDescriptionRepository jobDescriptionRepository;
     private final KeywordExtractorService keywordExtractorService;
+    private final CurrentUserService currentUserService;
 
     public JobDescriptionService(
             JobDescriptionRepository jobDescriptionRepository,
-            KeywordExtractorService keywordExtractorService
+            KeywordExtractorService keywordExtractorService,
+            CurrentUserService currentUserService
     ) {
         this.jobDescriptionRepository = jobDescriptionRepository;
         this.keywordExtractorService = keywordExtractorService;
+        this.currentUserService = currentUserService;
     }
 
     public JobDescriptionResponseDto saveJobDescription(JobDescriptionRequestDto request) {
+
+        User currentUser = currentUserService.getCurrentUser();
 
         String extractedKeywords = String.join(
                 ", ",
@@ -30,6 +37,7 @@ public class JobDescriptionService {
         );
 
         JobDescription jobDescription = JobDescription.builder()
+                .user(currentUser)
                 .content(request.getContent())
                 .extractedKeywords(extractedKeywords)
                 .createdAt(LocalDateTime.now())
@@ -46,7 +54,11 @@ public class JobDescriptionService {
     }
 
     public JobDescription getJobDescriptionById(Long jobDescriptionId) {
-        return jobDescriptionRepository.findById(jobDescriptionId)
+
+        Long userId = currentUserService.getCurrentUser().getId();
+
+        return jobDescriptionRepository
+                .findByIdAndUserId(jobDescriptionId, userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Job Description not found with id: " + jobDescriptionId

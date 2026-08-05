@@ -2,6 +2,8 @@ package com.resumeforge.ai;
 
 import com.resumeforge.ai.prompt.ResumeGenerationPromptBuilder;
 import com.resumeforge.analysis.dto.AIResumeGenerationResponseDto;
+import com.resumeforge.auth.CurrentUserService;
+import com.resumeforge.auth.user.User;
 import com.resumeforge.generatedresume.GeneratedResume;
 import com.resumeforge.generatedresume.GeneratedResumeService;
 import com.resumeforge.jobdescription.JobDescription;
@@ -18,25 +20,30 @@ public class ResumeGenerationService {
     private final ResumeGenerationPromptBuilder promptBuilder;
     private final AiClientService aiClientService;
     private final GeneratedResumeService generatedResumeService;
+    private final CurrentUserService currentUserService;
 
     public ResumeGenerationService(
             ResumeService resumeService,
             JobDescriptionService jobDescriptionService,
             ResumeGenerationPromptBuilder promptBuilder,
             AiClientService aiClientService,
-            GeneratedResumeService generatedResumeService
+            GeneratedResumeService generatedResumeService,
+            CurrentUserService currentUserService
     ) {
         this.resumeService = resumeService;
         this.jobDescriptionService = jobDescriptionService;
         this.promptBuilder = promptBuilder;
         this.aiClientService = aiClientService;
         this.generatedResumeService = generatedResumeService;
+        this.currentUserService = currentUserService;
     }
 
     public AIResumeGenerationResponseDto generateResume(
             Long resumeId,
             Long jobDescriptionId
     ) {
+
+        User currentUser = currentUserService.getCurrentUser();
 
         Resume resume = resumeService.getResumeById(resumeId);
 
@@ -55,6 +62,7 @@ public class ResumeGenerationService {
                 );
 
         GeneratedResume generatedResume = GeneratedResume.builder()
+                .user(currentUser)
                 .resume(resume)
                 .jobDescription(jobDescription)
                 .generatedResume(response.getGeneratedResume())

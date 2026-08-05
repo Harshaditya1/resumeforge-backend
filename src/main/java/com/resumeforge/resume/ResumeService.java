@@ -1,5 +1,7 @@
 package com.resumeforge.resume;
 
+import com.resumeforge.auth.CurrentUserService;
+import com.resumeforge.auth.user.User;
 import com.resumeforge.exception.ResourceNotFoundException;
 import com.resumeforge.resume.dto.ResumeResponseDto;
 import org.springframework.stereotype.Service;
@@ -15,22 +17,28 @@ public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final FileStorageService fileStorageService;
     private final PdfTextExtractorService pdfTextExtractorService;
+    private final CurrentUserService currentUserService;
 
     public ResumeService(
             ResumeRepository resumeRepository,
             FileStorageService fileStorageService,
-            PdfTextExtractorService pdfTextExtractorService) {
+            PdfTextExtractorService pdfTextExtractorService,
+            CurrentUserService currentUserService) {
 
         this.resumeRepository = resumeRepository;
         this.fileStorageService = fileStorageService;
         this.pdfTextExtractorService = pdfTextExtractorService;
+        this.currentUserService = currentUserService;
     }
 
     public ResumeResponseDto uploadResume(MultipartFile file) throws IOException {
 
+        User currentUser = currentUserService.getCurrentUser();
+
         String storedFileName = fileStorageService.storeFile(file);
 
         Resume resume = Resume.builder()
+                .user(currentUser)
                 .originalFileName(file.getOriginalFilename())
                 .storedFileName(storedFileName)
                 .fileType(file.getContentType())
@@ -61,11 +69,18 @@ public class ResumeService {
     }
 
     public List<Resume> getAllResumes() {
-        return resumeRepository.findAll();
+
+        Long userId = currentUserService.getCurrentUser().getId();
+
+        return resumeRepository.findAllByUserIdOrderByUploadedAtDesc(userId);
     }
 
     public Resume getResumeById(Long resumeId) {
-        return resumeRepository.findById(resumeId)
+
+        Long userId = currentUserService.getCurrentUser().getId();
+
+        return resumeRepository
+                .findByIdAndUserId(resumeId, userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Resume not found with id: " + resumeId

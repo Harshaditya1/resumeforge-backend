@@ -1,5 +1,6 @@
 package com.resumeforge.generatedresume;
 
+import com.resumeforge.auth.CurrentUserService;
 import com.resumeforge.generatedresume.dto.GeneratedResumeDetailsResponseDto;
 import com.resumeforge.generatedresume.dto.GeneratedResumeHistoryResponseDto;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,9 +12,14 @@ import java.util.List;
 public class GeneratedResumeService {
 
     private final GeneratedResumeRepository generatedResumeRepository;
+    private final CurrentUserService currentUserService;
 
-    public GeneratedResumeService(GeneratedResumeRepository generatedResumeRepository) {
+    public GeneratedResumeService(
+            GeneratedResumeRepository generatedResumeRepository,
+            CurrentUserService currentUserService
+    ) {
         this.generatedResumeRepository = generatedResumeRepository;
+        this.currentUserService = currentUserService;
     }
 
     public GeneratedResume save(GeneratedResume generatedResume) {
@@ -22,8 +28,10 @@ public class GeneratedResumeService {
 
     public List<GeneratedResumeHistoryResponseDto> getVersionHistory(Long resumeId) {
 
+        Long userId = currentUserService.getCurrentUser().getId();
+
         return generatedResumeRepository
-                .findByResumeIdOrderByCreatedAtDesc(resumeId)
+                .findByResumeIdAndUserIdOrderByCreatedAtDesc(resumeId, userId)
                 .stream()
                 .map(this::mapToHistoryDto)
                 .toList();
@@ -31,8 +39,10 @@ public class GeneratedResumeService {
 
     public GeneratedResumeDetailsResponseDto getVersionById(Long versionId) {
 
+        Long userId = currentUserService.getCurrentUser().getId();
+
         GeneratedResume generatedResume = generatedResumeRepository
-                .findById(versionId)
+                .findByIdAndUserId(versionId, userId)
                 .orElseThrow(() ->
                         new EntityNotFoundException(
                                 "Generated resume version not found with id: " + versionId));
