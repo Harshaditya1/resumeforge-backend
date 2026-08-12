@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.nio.file.Path;
+import com.resumeforge.resume.mapper.ResumeMapper;
 
 @Service
 public class ResumeService {
@@ -61,13 +62,7 @@ public class ResumeService {
         System.out.println(extractedText);
         System.out.println("===========================================");
 
-        return ResumeResponseDto.builder()
-                .id(savedResume.getId())
-                .originalFileName(savedResume.getOriginalFileName())
-                .fileType(savedResume.getFileType())
-                .fileSize(savedResume.getFileSize())
-                .uploadedAt(savedResume.getUploadedAt())
-                .build();
+        return ResumeMapper.toResponseDto(savedResume);
     }
 
     public List<Resume> getAllResumes() {
