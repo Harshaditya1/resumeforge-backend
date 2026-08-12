@@ -39,4 +39,12 @@ public class JobDescriptionController {
 
         return ResponseEntity.ok(jobDescriptions);
     }
+    @GetMapping("/latest")
+    public ResponseEntity<JobDescriptionResponseDto> getLatestJobDescription() {
+
+        JobDescriptionResponseDto response =
+                jobDescriptionService.getLatestJobDescription();
+
+        return ResponseEntity.ok(response);
+    }
 }

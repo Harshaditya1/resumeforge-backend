@@ -11,5 +11,7 @@ public interface JobDescriptionRepository extends JpaRepository<JobDescription, 
 
     Optional<JobDescription> findByIdAndUserId(Long id, Long userId);
 
+    Optional<JobDescription> findFirstByUserIdOrderByCreatedAtDesc(Long userId);
+
     List<JobDescription> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 }

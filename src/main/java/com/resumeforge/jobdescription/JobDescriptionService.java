@@ -72,6 +72,28 @@ public class JobDescriptionService {
                 .toList();
     }
 
+    public JobDescriptionResponseDto getLatestJobDescription() {
+
+        Long userId = currentUserService
+                .getCurrentUser()
+                .getId();
+
+        JobDescription jobDescription = jobDescriptionRepository
+                .findFirstByUserIdOrderByCreatedAtDesc(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "No Job Description found."
+                        )
+                );
+
+        return JobDescriptionResponseDto.builder()
+                .id(jobDescription.getId())
+                .content(jobDescription.getContent())
+                .extractedKeywords(jobDescription.getExtractedKeywords())
+                .createdAt(jobDescription.getCreatedAt())
+                .build();
+    }
+
     public JobDescription getJobDescriptionById(Long jobDescriptionId) {
 
         Long userId = currentUserService.getCurrentUser().getId();
