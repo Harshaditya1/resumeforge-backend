@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.nio.file.Path;
 
 @Service
 public class ResumeService {
@@ -110,5 +111,13 @@ public class ResumeService {
         fileStorageService.deleteFile(resume.getStoredFileName());
 
         resumeRepository.delete(resume);
+    }
+    public Path getResumeFile(Long resumeId) {
+
+        Resume resume = getResumeById(resumeId);
+
+        return fileStorageService.getFilePath(
+                resume.getStoredFileName()
+        );
     }
 }

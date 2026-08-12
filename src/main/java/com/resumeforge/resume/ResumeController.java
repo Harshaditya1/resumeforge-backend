@@ -9,6 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+
+import java.net.MalformedURLException;
+import java.nio.file.Path;
 
 @RestController
 @RequestMapping("/api/resumes")
@@ -67,5 +73,36 @@ public class ResumeController {
         resumeService.deleteResume(resumeId);
 
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/{resumeId}/download")
+    public ResponseEntity<Resource> downloadResume(
+            @PathVariable Long resumeId)
+            throws MalformedURLException {
+
+        Resume resume = resumeService.getResumeById(resumeId);
+
+        Path filePath = resumeService.getResumeFile(resumeId);
+
+        Resource resource = new UrlResource(
+                filePath.toUri()
+        );
+
+        if (!resource.exists() || !resource.isReadable()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" +
+                                resume.getOriginalFileName() +
+                                "\""
+                )
+                .contentType(
+                        MediaType.parseMediaType(
+                                resume.getFileType()
+                        )
+                )
+                .body(resource);
     }
 }
