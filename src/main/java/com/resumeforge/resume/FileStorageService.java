@@ -55,4 +55,12 @@ public class FileStorageService {
 
         Files.deleteIfExists(filePath);
     }
+
+    /**
+     * Returns the path of a stored resume file.
+     */
+    public Path getFilePath(String storedFileName) {
+
+        return Paths.get(UPLOAD_DIR).resolve(storedFileName);
+    }
 }
