@@ -50,6 +50,16 @@ public class ResumeController {
 
         return ResponseEntity.ok(resume);
     }
+
+    @GetMapping("/{resumeId}")
+    public ResponseEntity<Resume> getResumeById(
+            @PathVariable Long resumeId) {
+
+        Resume resume = resumeService.getResumeById(resumeId);
+
+        return ResponseEntity.ok(resume);
+    }
+
     @DeleteMapping("/{resumeId}")
     public ResponseEntity<Void> deleteResume(
             @PathVariable Long resumeId) throws IOException {
