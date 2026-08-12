@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import com.resumeforge.jobdescription.mapper.JobDescriptionMapper;
 
 @Service
 public class JobDescriptionService {
@@ -46,12 +47,7 @@ public class JobDescriptionService {
 
         JobDescription savedJobDescription = jobDescriptionRepository.save(jobDescription);
 
-        return JobDescriptionResponseDto.builder()
-                .id(savedJobDescription.getId())
-                .content(savedJobDescription.getContent())
-                .extractedKeywords(savedJobDescription.getExtractedKeywords())
-                .createdAt(savedJobDescription.getCreatedAt())
-                .build();
+        return JobDescriptionMapper.toResponseDto(savedJobDescription);
     }
 
     public List<JobDescriptionResponseDto> getAllJobDescriptions() {
@@ -63,12 +59,7 @@ public class JobDescriptionService {
         return jobDescriptionRepository
                 .findAllByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
-                .map(jobDescription -> JobDescriptionResponseDto.builder()
-                        .id(jobDescription.getId())
-                        .content(jobDescription.getContent())
-                        .extractedKeywords(jobDescription.getExtractedKeywords())
-                        .createdAt(jobDescription.getCreatedAt())
-                        .build())
+                .map(JobDescriptionMapper::toResponseDto)
                 .toList();
     }
 
@@ -86,12 +77,7 @@ public class JobDescriptionService {
                         )
                 );
 
-        return JobDescriptionResponseDto.builder()
-                .id(jobDescription.getId())
-                .content(jobDescription.getContent())
-                .extractedKeywords(jobDescription.getExtractedKeywords())
-                .createdAt(jobDescription.getCreatedAt())
-                .build();
+        return JobDescriptionMapper.toResponseDto(jobDescription);
     }
 
     public JobDescription getJobDescriptionById(Long jobDescriptionId) {
