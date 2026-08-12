@@ -47,4 +47,21 @@ public class JobDescriptionController {
 
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/{jobDescriptionId}")
+    public ResponseEntity<JobDescriptionResponseDto> getJobDescriptionById(
+            @PathVariable Long jobDescriptionId) {
+
+        JobDescription jobDescription =
+                jobDescriptionService.getJobDescriptionById(jobDescriptionId);
+
+        JobDescriptionResponseDto response =
+                JobDescriptionResponseDto.builder()
+                        .id(jobDescription.getId())
+                        .content(jobDescription.getContent())
+                        .extractedKeywords(jobDescription.getExtractedKeywords())
+                        .createdAt(jobDescription.getCreatedAt())
+                        .build();
+
+        return ResponseEntity.ok(response);
+    }
 }
