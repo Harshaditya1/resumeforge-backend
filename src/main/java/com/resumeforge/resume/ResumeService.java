@@ -65,26 +65,32 @@ public class ResumeService {
         return ResumeMapper.toResponseDto(savedResume);
     }
 
-    public List<Resume> getAllResumes() {
+    public List<ResumeResponseDto> getAllResumes() {
 
         Long userId = currentUserService.getCurrentUser().getId();
 
-        return resumeRepository.findAllByUserIdOrderByUploadedAtDesc(userId);
+        return resumeRepository
+                .findAllByUserIdOrderByUploadedAtDesc(userId)
+                .stream()
+                .map(ResumeMapper::toResponseDto)
+                .toList();
     }
 
-    public Resume getLatestResume() {
+    public ResumeResponseDto getLatestResume() {
 
         Long userId = currentUserService
                 .getCurrentUser()
                 .getId();
 
-        return resumeRepository
+        Resume resume = resumeRepository
                 .findFirstByUserIdOrderByUploadedAtDesc(userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "No resume found."
                         )
                 );
+
+        return ResumeMapper.toResponseDto(resume);
     }
 
     public Resume getResumeById(Long resumeId) {

@@ -42,17 +42,17 @@ public class ResumeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Resume>> getAllResumes() {
+    public ResponseEntity<List<ResumeResponseDto>> getAllResumes() {
 
-        List<Resume> resumes = resumeService.getAllResumes();
+        List<ResumeResponseDto> resumes = resumeService.getAllResumes();
 
         return ResponseEntity.ok(resumes);
     }
 
     @GetMapping("/latest")
-    public ResponseEntity<Resume> getLatestResume() {
+    public ResponseEntity<ResumeResponseDto> getLatestResume() {
 
-        Resume resume = resumeService.getLatestResume();
+        ResumeResponseDto resume = resumeService.getLatestResume();
 
         return ResponseEntity.ok(resume);
     }
