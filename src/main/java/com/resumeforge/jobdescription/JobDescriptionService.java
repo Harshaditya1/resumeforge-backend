@@ -9,6 +9,7 @@ import com.resumeforge.jobdescription.dto.JobDescriptionResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class JobDescriptionService {
@@ -51,6 +52,24 @@ public class JobDescriptionService {
                 .extractedKeywords(savedJobDescription.getExtractedKeywords())
                 .createdAt(savedJobDescription.getCreatedAt())
                 .build();
+    }
+
+    public List<JobDescriptionResponseDto> getAllJobDescriptions() {
+
+        Long userId = currentUserService
+                .getCurrentUser()
+                .getId();
+
+        return jobDescriptionRepository
+                .findAllByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(jobDescription -> JobDescriptionResponseDto.builder()
+                        .id(jobDescription.getId())
+                        .content(jobDescription.getContent())
+                        .extractedKeywords(jobDescription.getExtractedKeywords())
+                        .createdAt(jobDescription.getCreatedAt())
+                        .build())
+                .toList();
     }
 
     public JobDescription getJobDescriptionById(Long jobDescriptionId) {
