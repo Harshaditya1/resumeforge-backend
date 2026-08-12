@@ -106,4 +106,11 @@ public class JobDescriptionService {
                         )
                 );
     }
+    public void deleteJobDescription(Long jobDescriptionId) {
+
+        JobDescription jobDescription =
+                getJobDescriptionById(jobDescriptionId);
+
+        jobDescriptionRepository.delete(jobDescription);
+    }
 }

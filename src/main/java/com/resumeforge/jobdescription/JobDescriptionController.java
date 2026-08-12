@@ -64,4 +64,12 @@ public class JobDescriptionController {
 
         return ResponseEntity.ok(response);
     }
+    @DeleteMapping("/{jobDescriptionId}")
+    public ResponseEntity<Void> deleteJobDescription(
+            @PathVariable Long jobDescriptionId) {
+
+        jobDescriptionService.deleteJobDescription(jobDescriptionId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
