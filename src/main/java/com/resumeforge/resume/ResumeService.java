@@ -49,7 +49,8 @@ public class ResumeService {
 
         Resume savedResume = resumeRepository.save(resume);
 
-        String extractedText = pdfTextExtractorService.extractText(savedResume.getFilePath());
+        String extractedText =
+                pdfTextExtractorService.extractText(savedResume.getFilePath());
 
         savedResume.setExtractedText(extractedText);
 
@@ -73,6 +74,21 @@ public class ResumeService {
         Long userId = currentUserService.getCurrentUser().getId();
 
         return resumeRepository.findAllByUserIdOrderByUploadedAtDesc(userId);
+    }
+
+    public Resume getLatestResume() {
+
+        Long userId = currentUserService
+                .getCurrentUser()
+                .getId();
+
+        return resumeRepository
+                .findFirstByUserIdOrderByUploadedAtDesc(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "No resume found."
+                        )
+                );
     }
 
     public Resume getResumeById(Long resumeId) {

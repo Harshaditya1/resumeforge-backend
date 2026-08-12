@@ -3,6 +3,7 @@ package com.resumeforge.generatedresume;
 import com.resumeforge.auth.CurrentUserService;
 import com.resumeforge.generatedresume.dto.GeneratedResumeDetailsResponseDto;
 import com.resumeforge.generatedresume.dto.GeneratedResumeHistoryResponseDto;
+import com.resumeforge.pdf.PdfResumeService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +14,16 @@ public class GeneratedResumeService {
 
     private final GeneratedResumeRepository generatedResumeRepository;
     private final CurrentUserService currentUserService;
+    private final PdfResumeService pdfResumeService;
 
     public GeneratedResumeService(
             GeneratedResumeRepository generatedResumeRepository,
-            CurrentUserService currentUserService
+            CurrentUserService currentUserService,
+            PdfResumeService pdfResumeService
     ) {
         this.generatedResumeRepository = generatedResumeRepository;
         this.currentUserService = currentUserService;
+        this.pdfResumeService = pdfResumeService;
     }
 
     public GeneratedResume save(GeneratedResume generatedResume) {
@@ -54,6 +58,21 @@ public class GeneratedResumeService {
                 .generatedResume(generatedResume.getGeneratedResume())
                 .createdAt(generatedResume.getCreatedAt())
                 .build();
+    }
+
+    public byte[] downloadResumePdf(Long versionId) {
+
+        Long userId = currentUserService.getCurrentUser().getId();
+
+        GeneratedResume generatedResume = generatedResumeRepository
+                .findByIdAndUserId(versionId, userId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Generated resume version not found with id: " + versionId));
+
+        return pdfResumeService.generateResumePdf(
+                generatedResume.getGeneratedResume()
+        );
     }
 
     private GeneratedResumeHistoryResponseDto mapToHistoryDto(

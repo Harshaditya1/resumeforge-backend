@@ -42,4 +42,12 @@ public class ResumeController {
 
         return ResponseEntity.ok(resumes);
     }
+
+    @GetMapping("/latest")
+    public ResponseEntity<Resume> getLatestResume() {
+
+        Resume resume = resumeService.getLatestResume();
+
+        return ResponseEntity.ok(resume);
+    }
 }

@@ -9,5 +9,7 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
 
     Optional<Resume> findByIdAndUserId(Long id, Long userId);
 
+    Optional<Resume> findFirstByUserIdOrderByUploadedAtDesc(Long userId);
+
     List<Resume> findAllByUserIdOrderByUploadedAtDesc(Long userId);
 }
