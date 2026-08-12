@@ -103,4 +103,12 @@ public class ResumeService {
                         )
                 );
     }
+    public void deleteResume(Long resumeId) throws IOException {
+
+        Resume resume = getResumeById(resumeId);
+
+        fileStorageService.deleteFile(resume.getStoredFileName());
+
+        resumeRepository.delete(resume);
+    }
 }

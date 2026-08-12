@@ -50,4 +50,12 @@ public class ResumeController {
 
         return ResponseEntity.ok(resume);
     }
+    @DeleteMapping("/{resumeId}")
+    public ResponseEntity<Void> deleteResume(
+            @PathVariable Long resumeId) throws IOException {
+
+        resumeService.deleteResume(resumeId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
