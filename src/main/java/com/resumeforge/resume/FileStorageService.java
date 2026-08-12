@@ -41,4 +41,18 @@ public class FileStorageService {
 
         return storedFileName;
     }
+
+    /**
+     * Delete stored resume file.
+     */
+    public void deleteFile(String storedFileName) throws IOException {
+
+        if (storedFileName == null || storedFileName.isBlank()) {
+            return;
+        }
+
+        Path filePath = Paths.get(UPLOAD_DIR).resolve(storedFileName);
+
+        Files.deleteIfExists(filePath);
+    }
 }
