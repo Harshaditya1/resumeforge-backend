@@ -7,11 +7,25 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface JobDescriptionRepository extends JpaRepository<JobDescription, Long> {
+public interface JobDescriptionRepository
+        extends JpaRepository<JobDescription, Long> {
 
-    Optional<JobDescription> findByIdAndUserId(Long id, Long userId);
+    Optional<JobDescription> findByIdAndUserId(
+            Long id,
+            Long userId
+    );
 
-    Optional<JobDescription> findFirstByUserIdOrderByCreatedAtDesc(Long userId);
+    /**
+     * Latest Job Description of current user
+     */
+    Optional<JobDescription> findFirstByUserIdOrderByCreatedAtDesc(
+            Long userId
+    );
 
-    List<JobDescription> findAllByUserIdOrderByCreatedAtDesc(Long userId);
+    /**
+     * Complete Job Description History
+     */
+    List<JobDescription> findAllByUserIdOrderByCreatedAtDesc(
+            Long userId
+    );
 }
