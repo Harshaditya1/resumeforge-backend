@@ -7,68 +7,68 @@ import com.resumeforge.auth.user.User;
 import com.resumeforge.generatedresume.GeneratedResume;
 import com.resumeforge.generatedresume.GeneratedResumeService;
 import com.resumeforge.jobdescription.JobDescription;
-import com.resumeforge.jobdescription.JobDescriptionService;
 import com.resumeforge.resume.Resume;
-import com.resumeforge.resume.ResumeService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ResumeGenerationService {
 
-    private final ResumeService resumeService;
-    private final JobDescriptionService jobDescriptionService;
+    private final CurrentResumeContextService currentResumeContextService;
     private final ResumeGenerationPromptBuilder promptBuilder;
     private final AiClientService aiClientService;
     private final GeneratedResumeService generatedResumeService;
     private final CurrentUserService currentUserService;
 
     public ResumeGenerationService(
-            ResumeService resumeService,
-            JobDescriptionService jobDescriptionService,
+            CurrentResumeContextService currentResumeContextService,
             ResumeGenerationPromptBuilder promptBuilder,
             AiClientService aiClientService,
             GeneratedResumeService generatedResumeService,
             CurrentUserService currentUserService
     ) {
-        this.resumeService = resumeService;
-        this.jobDescriptionService = jobDescriptionService;
+        this.currentResumeContextService = currentResumeContextService;
         this.promptBuilder = promptBuilder;
         this.aiClientService = aiClientService;
         this.generatedResumeService = generatedResumeService;
         this.currentUserService = currentUserService;
     }
 
-    public AIResumeGenerationResponseDto generateResume(
-            Long resumeId,
-            Long jobDescriptionId
-    ) {
+    public AIResumeGenerationResponseDto generateResume() {
 
-        User currentUser = currentUserService.getCurrentUser();
+        User currentUser =
+                currentUserService.getCurrentUser();
 
-        Resume resume = resumeService.getResumeById(resumeId);
+        Resume resume =
+                currentResumeContextService.getLatestResume();
 
         JobDescription jobDescription =
-                jobDescriptionService.getJobDescriptionById(jobDescriptionId);
+                currentResumeContextService
+                        .getLatestJobDescription();
 
-        String prompt = promptBuilder.buildPrompt(
-                resume.getExtractedText(),
-                jobDescription.getContent()
-        );
+        String prompt =
+                promptBuilder.buildPrompt(
+                        resume.getExtractedText(),
+                        jobDescription.getContent()
+                );
 
         AIResumeGenerationResponseDto response =
                 aiClientService.ask(
                         prompt,
                         AIResumeGenerationResponseDto.class
                 );
+        GeneratedResume generatedResume =
+                GeneratedResume.builder()
+                        .user(currentUser)
+                        .resume(resume)
+                        .jobDescription(jobDescription)
+                        .generatedResume(
+                                response.getGeneratedResume()
+                        )
+                        .build();
 
-        GeneratedResume generatedResume = GeneratedResume.builder()
-                .user(currentUser)
-                .resume(resume)
-                .jobDescription(jobDescription)
-                .generatedResume(response.getGeneratedResume())
-                .build();
-
-        generatedResumeService.save(generatedResume);
+        generatedResumeService.save(
+                generatedResume
+        );
 
         return response;
     }

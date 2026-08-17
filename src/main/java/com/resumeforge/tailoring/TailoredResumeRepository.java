@@ -1,12 +1,40 @@
 package com.resumeforge.tailoring;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface TailoredResumeRepository extends JpaRepository<TailoredResume, Long> {
+@Repository
+public interface TailoredResumeRepository
+        extends JpaRepository<TailoredResume, Long> {
 
-    List<TailoredResume> findByResumeIdOrderByCreatedAtDesc(Long resumeId);
+    /**
+     * Latest tailored resume for a resume.
+     */
+    Optional<TailoredResume> findFirstByResumeIdOrderByCreatedAtDesc(
+            Long resumeId
+    );
 
-    List<TailoredResume> findByJobDescriptionIdOrderByCreatedAtDesc(Long jobDescriptionId);
+    /**
+     * History for a resume.
+     */
+    List<TailoredResume> findByResumeIdOrderByCreatedAtDesc(
+            Long resumeId
+    );
+
+    /**
+     * Latest tailored resume for a job description.
+     */
+    Optional<TailoredResume> findFirstByJobDescriptionIdOrderByCreatedAtDesc(
+            Long jobDescriptionId
+    );
+
+    /**
+     * History for a job description.
+     */
+    List<TailoredResume> findByJobDescriptionIdOrderByCreatedAtDesc(
+            Long jobDescriptionId
+    );
 }

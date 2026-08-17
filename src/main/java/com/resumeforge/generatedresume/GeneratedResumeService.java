@@ -74,6 +74,39 @@ public class GeneratedResumeService {
                 generatedResume.getGeneratedResume()
         );
     }
+    public GeneratedResumeDetailsResponseDto getLatest() {
+
+        Long userId = currentUserService.getCurrentUser().getId();
+
+        GeneratedResume generatedResume = generatedResumeRepository
+                .findFirstByUserIdOrderByCreatedAtDesc(userId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "No generated resume found."
+                        ));
+
+        return GeneratedResumeDetailsResponseDto.builder()
+                .id(generatedResume.getId())
+                .resumeId(generatedResume.getResume().getId())
+                .jobDescriptionId(generatedResume.getJobDescription().getId())
+                .generatedResume(generatedResume.getGeneratedResume())
+                .createdAt(generatedResume.getCreatedAt())
+                .build();
+    }
+    public void delete(Long id) {
+
+        Long userId = currentUserService.getCurrentUser().getId();
+
+        GeneratedResume generatedResume =
+                generatedResumeRepository
+                        .findByIdAndUserId(id, userId)
+                        .orElseThrow(() ->
+                                new EntityNotFoundException(
+                                        "Generated resume not found."
+                                ));
+
+        generatedResumeRepository.delete(generatedResume);
+    }
 
     private GeneratedResumeHistoryResponseDto mapToHistoryDto(
             GeneratedResume generatedResume) {
@@ -84,5 +117,21 @@ public class GeneratedResumeService {
                 .jobDescriptionId(generatedResume.getJobDescription().getId())
                 .createdAt(generatedResume.getCreatedAt())
                 .build();
+    }
+    public void approve(Long id) {
+
+        Long userId = currentUserService.getCurrentUser().getId();
+
+        GeneratedResume generatedResume =
+                generatedResumeRepository
+                        .findByIdAndUserId(id, userId)
+                        .orElseThrow(() ->
+                                new EntityNotFoundException(
+                                        "Generated resume not found."
+                                ));
+
+        generatedResume.setApproved(true);
+
+        generatedResumeRepository.save(generatedResume);
     }
 }

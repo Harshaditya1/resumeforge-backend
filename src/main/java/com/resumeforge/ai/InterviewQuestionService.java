@@ -2,50 +2,99 @@ package com.resumeforge.ai;
 
 import com.resumeforge.ai.prompt.InterviewQuestionPromptBuilder;
 import com.resumeforge.analysis.dto.AIInterviewQuestionResponseDto;
+import com.resumeforge.auth.CurrentUserService;
+import com.resumeforge.auth.user.User;
+import com.resumeforge.interviewquestion.InterviewQuestion;
+import com.resumeforge.interviewquestion.InterviewQuestionHistoryService;
 import com.resumeforge.jobdescription.JobDescription;
-import com.resumeforge.jobdescription.JobDescriptionService;
 import com.resumeforge.resume.Resume;
-import com.resumeforge.resume.ResumeService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class InterviewQuestionService {
 
-    private final ResumeService resumeService;
-    private final JobDescriptionService jobDescriptionService;
+    private final CurrentResumeContextService currentResumeContextService;
     private final InterviewQuestionPromptBuilder promptBuilder;
     private final AiClientService aiClientService;
+    private final InterviewQuestionHistoryService interviewQuestionHistoryService;
+    private final CurrentUserService currentUserService;
 
     public InterviewQuestionService(
-            ResumeService resumeService,
-            JobDescriptionService jobDescriptionService,
+            CurrentResumeContextService currentResumeContextService,
             InterviewQuestionPromptBuilder promptBuilder,
-            AiClientService aiClientService
+            AiClientService aiClientService,
+            InterviewQuestionHistoryService interviewQuestionHistoryService,
+            CurrentUserService currentUserService
     ) {
-        this.resumeService = resumeService;
-        this.jobDescriptionService = jobDescriptionService;
+        this.currentResumeContextService = currentResumeContextService;
         this.promptBuilder = promptBuilder;
         this.aiClientService = aiClientService;
+        this.interviewQuestionHistoryService = interviewQuestionHistoryService;
+        this.currentUserService = currentUserService;
     }
 
-    public AIInterviewQuestionResponseDto generateInterviewQuestions(
-            Long resumeId,
-            Long jobDescriptionId
-    ) {
+    public AIInterviewQuestionResponseDto generateInterviewQuestions() {
 
-        Resume resume = resumeService.getResumeById(resumeId);
+        User currentUser = currentUserService.getCurrentUser();
+
+        Resume resume = currentResumeContextService.getLatestResume();
 
         JobDescription jobDescription =
-                jobDescriptionService.getJobDescriptionById(jobDescriptionId);
+                currentResumeContextService.getLatestJobDescription();
 
         String prompt = promptBuilder.buildPrompt(
                 resume.getExtractedText(),
                 jobDescription.getContent()
         );
 
-        return aiClientService.ask(
-                prompt,
-                AIInterviewQuestionResponseDto.class
-        );
+        AIInterviewQuestionResponseDto response =
+                aiClientService.ask(
+                        prompt,
+                        AIInterviewQuestionResponseDto.class
+                );
+
+        StringBuilder questions = new StringBuilder();
+
+        if (response.getTechnicalQuestions() != null
+                && !response.getTechnicalQuestions().isEmpty()) {
+
+            questions.append("========== TECHNICAL QUESTIONS ==========\n\n");
+
+            response.getTechnicalQuestions()
+                    .forEach(question ->
+                            questions.append(question).append("\n"));
+        }
+
+        if (response.getHrQuestions() != null
+                && !response.getHrQuestions().isEmpty()) {
+
+            questions.append("\n========== HR QUESTIONS ==========\n\n");
+
+            response.getHrQuestions()
+                    .forEach(question ->
+                            questions.append(question).append("\n"));
+        }
+
+        if (response.getBehavioralQuestions() != null
+                && !response.getBehavioralQuestions().isEmpty()) {
+
+            questions.append("\n========== BEHAVIORAL QUESTIONS ==========\n\n");
+
+            response.getBehavioralQuestions()
+                    .forEach(question ->
+                            questions.append(question).append("\n"));
+        }
+
+        InterviewQuestion interviewQuestion =
+                InterviewQuestion.builder()
+                        .user(currentUser)
+                        .resume(resume)
+                        .jobDescription(jobDescription)
+                        .questions(questions.toString())
+                        .build();
+
+        interviewQuestionHistoryService.save(interviewQuestion);
+
+        return response;
     }
 }

@@ -6,14 +6,11 @@ import com.resumeforge.ai.ResumeTailoringService;
 import com.resumeforge.analysis.dto.AIInterviewQuestionResponseDto;
 import com.resumeforge.analysis.dto.AIResumeGenerationResponseDto;
 import com.resumeforge.analysis.dto.AIResumeTailoringResponseDto;
-import com.resumeforge.analysis.dto.GenerateResumeRequestDto;
-import com.resumeforge.analysis.dto.InterviewQuestionRequestDto;
-import com.resumeforge.analysis.dto.ResumeTailoringRequestDto;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/resume-tailoring")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ResumeTailoringController {
 
     private final ResumeTailoringService resumeTailoringService;
@@ -30,33 +27,33 @@ public class ResumeTailoringController {
         this.interviewQuestionService = interviewQuestionService;
     }
 
+    /**
+     * AI Resume Tailoring
+     * Uses latest uploaded Resume and latest Job Description
+     */
     @PostMapping
-    public AIResumeTailoringResponseDto tailorResume(
-            @Valid @RequestBody ResumeTailoringRequestDto request
-    ) {
-        return resumeTailoringService.tailorResume(
-                request.getResumeId(),
-                request.getJobDescriptionId()
-        );
+    public AIResumeTailoringResponseDto tailorResume() {
+
+        return resumeTailoringService.tailorResume();
     }
 
+    /**
+     * Generate Final Resume
+     * (We'll refactor ResumeGenerationService next)
+     */
     @PostMapping("/generate")
-    public AIResumeGenerationResponseDto generateResume(
-            @Valid @RequestBody GenerateResumeRequestDto request
-    ) {
-        return resumeGenerationService.generateResume(
-                request.getResumeId(),
-                request.getJobDescriptionId()
-        );
+    public AIResumeGenerationResponseDto generateResume() {
+
+        return resumeGenerationService.generateResume();
     }
 
+    /**
+     * Generate Interview Questions
+     * (We'll refactor InterviewQuestionService next)
+     */
     @PostMapping("/interview-questions")
-    public AIInterviewQuestionResponseDto generateInterviewQuestions(
-            @Valid @RequestBody InterviewQuestionRequestDto request
-    ) {
-        return interviewQuestionService.generateInterviewQuestions(
-                request.getResumeId(),
-                request.getJobDescriptionId()
-        );
+    public AIInterviewQuestionResponseDto generateInterviewQuestions() {
+
+        return interviewQuestionService.generateInterviewQuestions();
     }
 }

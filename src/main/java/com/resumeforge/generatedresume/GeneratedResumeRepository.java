@@ -25,4 +25,10 @@ public interface GeneratedResumeRepository extends JpaRepository<GeneratedResume
     List<GeneratedResume> findAllByUserIdOrderByCreatedAtDesc(
             Long userId
     );
+    /**
+     * Latest generated resume of current user
+     */
+    Optional<GeneratedResume> findFirstByUserIdOrderByCreatedAtDesc(
+            Long userId
+    );
 }
