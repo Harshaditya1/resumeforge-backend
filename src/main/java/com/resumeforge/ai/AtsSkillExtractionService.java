@@ -2,6 +2,7 @@ package com.resumeforge.ai;
 
 import com.resumeforge.ai.prompt.AtsSkillExtractionPromptBuilder;
 import com.resumeforge.analysis.model.AtsSkillProfile;
+import com.resumeforge.jobdescription.JobDescription;
 import com.resumeforge.resume.Resume;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +23,30 @@ public class AtsSkillExtractionService {
         this.aiClientService = aiClientService;
     }
 
-    public AtsSkillProfile extractSkills() {
+    public AtsSkillProfile extractResumeSkills() {
 
         Resume resume =
                 currentResumeContextService.getLatestResume();
 
+        return extractFromText(
+                resume.getExtractedText()
+        );
+    }
+
+    public AtsSkillProfile extractJobDescriptionSkills() {
+
+        JobDescription jobDescription =
+                currentResumeContextService.getLatestJobDescription();
+
+        return extractFromText(
+                jobDescription.getContent()
+        );
+    }
+
+    public AtsSkillProfile extractFromText(String text) {
+
         String prompt =
-                promptBuilder.buildPrompt(
-                        resume.getExtractedText()
-                );
+                promptBuilder.buildPrompt(text);
 
         return aiClientService.ask(
                 prompt,
