@@ -8,19 +8,21 @@ public class AtsSkillExtractionPromptBuilder {
     public String buildPrompt(String resumeText) {
 
         return """
-You are an ATS (Applicant Tracking System) resume parser.
+You are an expert ATS parser.
 
-Your task is to extract ONLY technical skills from the resume.
+Your ONLY task is to extract technical skills from the resume.
 
-Return ONLY valid JSON.
+IMPORTANT RULES
 
-Do NOT return markdown.
+1. Return ONLY valid JSON.
+2. Do NOT return Markdown.
+3. Do NOT wrap JSON inside ``` blocks.
+4. Do NOT explain anything.
+5. Do NOT invent skills.
+6. Remove duplicate skills.
+7. Preserve official technology names.
 
-Do NOT return explanations.
-
-Do NOT wrap the JSON inside ```.
-
-Ignore completely:
+IGNORE COMPLETELY
 
 - Name
 - Email
@@ -32,20 +34,19 @@ Ignore completely:
 - University Name
 - CGPA
 - Percentage
-- Years
+- Marks
 - Dates
-- Birth Date
-- Gender
-- Languages spoken
+- Years
+- Company Names
+- Project Titles
+- Awards
+- Achievements
 - Hobbies
 - Interests
-- Awards
-- Certifications that do not mention technologies
-- Project names unless they represent technologies
-- Company names
-- Generic English words
+- Languages Spoken
+- Generic English Words
 
-Extract and categorize technical skills into the following JSON structure.
+Return JSON EXACTLY in this format:
 
 {
   "languages": [],
@@ -63,16 +64,6 @@ Extract and categorize technical skills into the following JSON structure.
   "concepts": [],
   "softSkills": []
 }
-
-Rules:
-
-1. Put every skill into the most appropriate category.
-
-2. Do not duplicate skills.
-
-3. Keep original technology names.
-
-4. Return empty arrays when a category has no skills.
 
 Resume:
 
