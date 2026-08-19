@@ -7,15 +7,8 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class KeywordExtractorService {
@@ -30,10 +23,14 @@ public class KeywordExtractorService {
     );
 
     private final List<String> multiWordSkills = new ArrayList<>();
+
     private final Map<String, String> skillAliases = new HashMap<>();
+
+    private final Map<String, String> skillCategories = new HashMap<>();
 
     @PostConstruct
     private void loadMultiWordSkills() {
+
         try (
                 BufferedReader reader = new BufferedReader(
                         new InputStreamReader(
@@ -50,9 +47,14 @@ public class KeywordExtractorService {
                     .forEach(multiWordSkills::add);
 
         } catch (Exception e) {
-            throw new IllegalStateException("Unable to load multi-word skills.", e);
+
+            throw new IllegalStateException(
+                    "Unable to load multi-word skills.",
+                    e
+            );
         }
     }
+
     @PostConstruct
     private void loadSkillAliases() {
 
@@ -68,20 +70,66 @@ public class KeywordExtractorService {
             reader.lines()
                     .map(String::trim)
                     .filter(line -> !line.isBlank())
+                    .filter(line -> !line.startsWith("#"))
                     .forEach(line -> {
 
                         String[] parts = line.split("=", 2);
 
                         if (parts.length == 2) {
+
                             skillAliases.put(
                                     parts[0].trim().toLowerCase(),
                                     parts[1].trim().toLowerCase()
                             );
                         }
+
                     });
 
         } catch (Exception e) {
-            throw new IllegalStateException("Unable to load skill aliases.", e);
+
+            throw new IllegalStateException(
+                    "Unable to load skill aliases.",
+                    e
+            );
+        }
+    }
+
+    @PostConstruct
+    private void loadSkillCategories() {
+
+        try (
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(
+                                new ClassPathResource("skills/skill-categories.txt").getInputStream(),
+                                StandardCharsets.UTF_8
+                        )
+                )
+        ) {
+
+            reader.lines()
+                    .map(String::trim)
+                    .filter(line -> !line.isBlank())
+                    .filter(line -> !line.startsWith("#"))
+                    .forEach(line -> {
+
+                        String[] parts = line.split("=", 2);
+
+                        if (parts.length == 2) {
+
+                            skillCategories.put(
+                                    parts[0].trim().toLowerCase(),
+                                    parts[1].trim()
+                            );
+                        }
+
+                    });
+
+        } catch (Exception e) {
+
+            throw new IllegalStateException(
+                    "Unable to load skill categories.",
+                    e
+            );
         }
     }
 
@@ -99,7 +147,6 @@ public class KeywordExtractorService {
 
         String remainingText = cleanedText;
 
-        // Preserve multi-word skills first
         for (String skill : multiWordSkills) {
 
             String normalizedSkill = skill.toLowerCase();
@@ -107,20 +154,73 @@ public class KeywordExtractorService {
             if (remainingText.contains(normalizedSkill)) {
 
                 keywords.add(
-                        skillAliases.getOrDefault(normalizedSkill, normalizedSkill)
+                        normalizeSkill(normalizedSkill)
                 );
 
-                remainingText = remainingText.replace(normalizedSkill, " ");
+                remainingText =
+                        remainingText.replace(
+                                normalizedSkill,
+                                " "
+                        );
             }
         }
 
-        // Extract remaining single words
         Arrays.stream(remainingText.split("\\s+"))
                 .filter(word -> !word.isBlank())
                 .filter(word -> !STOP_WORDS.contains(word))
-                .map(word -> skillAliases.getOrDefault(word, word))
+                .map(this::normalizeSkill)
                 .forEach(keywords::add);
 
         return keywords;
+    }
+
+    public String normalizeSkill(String skill) {
+
+        if (skill == null || skill.isBlank()) {
+            return null;
+        }
+
+        String normalized =
+                skill.trim().toLowerCase();
+
+        return skillAliases.getOrDefault(
+                normalized,
+                normalized
+        );
+    }
+
+    public boolean isKnownSkill(String skill) {
+
+        if (skill == null || skill.isBlank()) {
+            return false;
+        }
+
+        return skillCategories.containsKey(
+                normalizeSkill(skill)
+        );
+    }
+
+    public String getSkillCategory(String skill) {
+
+        if (skill == null || skill.isBlank()) {
+            return null;
+        }
+
+        return skillCategories.get(
+                normalizeSkill(skill)
+        );
+    }
+
+    public Set<String> filterKnownSkills(Collection<String> skills) {
+
+        if (skills == null || skills.isEmpty()) {
+            return Set.of();
+        }
+
+        return skills.stream()
+                .map(this::normalizeSkill)
+                .filter(Objects::nonNull)
+                .filter(this::isKnownSkill)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
