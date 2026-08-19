@@ -1,11 +1,13 @@
 package com.resumeforge.analysis.dto;
 
+import com.resumeforge.analysis.model.AtsSkillProfile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -13,27 +15,46 @@ import java.util.List;
 @AllArgsConstructor
 public class AnalysisResponseDto {
 
-    // Extracted Resume Keywords
+    /*
+     * ============================
+     * Legacy ATS V1 Fields
+     * (Kept for backward compatibility)
+     * ============================
+     */
+
     private List<String> resumeKeywords;
 
-    // Extracted Job Description Keywords
     private List<String> jobDescriptionKeywords;
 
-    // Common Keywords
     private List<String> matchedKeywords;
 
-    // Missing Keywords
     private List<String> missingKeywords;
 
-    // ATS Match Score
     private double matchPercentage;
 
-    // Professional ATS Report
+    /*
+     * ============================
+     * ATS V2 Fields
+     * ============================
+     */
+
+    private AtsSkillProfile resumeSkillProfile;
+
+    private AtsSkillProfile jobDescriptionSkillProfile;
+
+    private Map<String, List<String>> matchedSkillsByCategory;
+
+    private Map<String, List<String>> missingSkillsByCategory;
+
+    /*
+     * ============================
+     * Existing Response Objects
+     * ============================
+     */
+
     private AtsReportDto report;
 
-    // Rule-based Resume Improvement Suggestions
     private ResumeImprovementDto improvement;
 
-    // AI-powered Resume Analysis
     private AiAnalysisResponseDto aiAnalysis;
 }
