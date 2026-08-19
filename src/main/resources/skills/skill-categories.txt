@@ -1,0 +1,125 @@
+# ==========================
+# Programming Languages
+# ==========================
+
+java=languages
+python=languages
+javascript=languages
+typescript=languages
+c=languages
+c++=languages
+c#=languages
+go=languages
+kotlin=languages
+swift=languages
+php=languages
+ruby=languages
+rust=languages
+
+# ==========================
+# Frameworks
+# ==========================
+
+spring=frameworks
+spring boot=frameworks
+spring mvc=frameworks
+react=frameworks
+angular=frameworks
+vue=frameworks
+express=frameworks
+
+# ==========================
+# Libraries
+# ==========================
+
+hibernate=libraries
+lombok=libraries
+numpy=libraries
+pandas=libraries
+
+# ==========================
+# Databases
+# ==========================
+
+mysql=databases
+postgresql=databases
+mongodb=databases
+oracle=databases
+redis=databases
+
+# ==========================
+# Cloud
+# ==========================
+
+aws=cloud
+azure=cloud
+gcp=cloud
+
+# ==========================
+# DevOps
+# ==========================
+
+docker=devOps
+kubernetes=devOps
+jenkins=devOps
+
+# ==========================
+# Testing
+# ==========================
+
+junit=testing
+mockito=testing
+selenium=testing
+
+# ==========================
+# Messaging
+# ==========================
+
+kafka=messaging
+rabbitmq=messaging
+
+# ==========================
+# AI
+# ==========================
+
+tensorflow=ai
+langchain=ai
+spring ai=ai
+openai=ai
+gemini=ai
+
+# ==========================
+# Tools
+# ==========================
+
+maven=tools
+gradle=tools
+postman=tools
+intellij=tools
+vscode=tools
+
+# ==========================
+# Version Control
+# ==========================
+
+git=versionControl
+github=versionControl
+gitlab=versionControl
+
+# ==========================
+# Operating Systems
+# ==========================
+
+linux=operatingSystems
+windows=operatingSystems
+ubuntu=operatingSystems
+
+# ==========================
+# Concepts
+# ==========================
+
+oops=concepts
+object oriented programming=concepts
+rest api=concepts
+microservices=concepts
+jwt=concepts
